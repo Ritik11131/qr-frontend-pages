@@ -555,7 +555,7 @@
 
             initializeSocket() {
                 this.debugLog('🔌 Connecting to Socket.IO server...');
-                this.socket = io('http://localhost:5000', {
+                this.socket = io('http://103.20.212.68:6500', {
                     transports: ['websocket', 'polling'],
                     timeout: 10000,
                     forceNew: true
@@ -691,7 +691,7 @@
 
                     this.debugLog(`📤 Sending call request: ${JSON.stringify(callPayload)}`);
 
-                    const response = await fetch('http://localhost:5000/api/calls/initiate', {
+                    const response = await fetch('http://103.20.212.68:6500/api/calls/initiate', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -836,7 +836,7 @@
                 
                 const pollStatus = async () => {
                     try {
-                        const response = await fetch(`http://localhost:5000/api/calls/${this.callData.callId}/status`);
+                        const response = await fetch(`http://103.20.212.68:6500/api/calls/${this.callData.callId}/status`);
                         const data = await response.json();
                         
                         if (data.success) {
@@ -902,7 +902,7 @@
                 try {
                     const duration = this.callStartTime ? Math.floor((Date.now() - this.callStartTime) / 1000) : 0;
                     
-                    await fetch(`http://localhost:5000/api/calls/${this.callData.callId}/end`, {
+                    await fetch(`http://103.20.212.68:6500/api/calls/${this.callData.callId}/end`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
