@@ -82,23 +82,32 @@
             background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
         }
 
-        .header {
-            margin-bottom: var(--spacing-xl);
-        }
+       .header {
+    display: flex;
+    align-items: center;
+    margin-bottom: var(--spacing-xl);
+}
 
-        .header h1 {
-            color: var(--dark-color);
-            font-size: var(--font-size-2xl);
-            font-weight: 700;
-            margin-bottom: var(--spacing-sm);
-            letter-spacing: -0.025em;
-        }
+.header-img {
+    width: 50px;
+    height: 50px;
+    margin-right: var(--spacing-md);
+}
 
-        .header p {
-            color: var(--muted-color);
-            font-size: var(--font-size-sm);
-            font-weight: 500;
-        }
+.header-text h1 {
+    color: var(--dark-color);
+    font-size: var(--font-size-2xl);
+    font-weight: 700;
+    margin-bottom: var(--spacing-sm);
+    letter-spacing: -0.025em;
+}
+
+.header-text p {
+    color: var(--muted-color);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+}
+
 
         .vehicle-info {
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
@@ -832,7 +841,7 @@
     </style>
 </head>
 <body>
-    <button class="toggle-debug" onclick="toggleDebug()">🔧 Debug</button>
+    <button style="visibility: hidden;" class="toggle-debug" onclick="toggleDebug()">🔧 Debug</button>
     
     <div class="container">
         <!-- Debug Panel -->
@@ -844,8 +853,11 @@
         <!-- Vehicle Info Section -->
         <div id="vehicleInfoSection">
             <div class="header">
-                <h1>🚗 Emergency Vehicle Contact</h1>
-                <p>Connect with the vehicle owner instantly</p>
+                <img src="emergency-icon.png" alt="Emergency Icon" class="header-img">
+                <div class="header-text">
+                    <h1>🚗 Emergency Vehicle Contact</h1>
+                    <p>Connect with the vehicle owner instantly</p>
+                </div>
             </div>
 
             <div id="errorMessage" class="message error-message" style="display: none;"></div>
@@ -860,7 +872,7 @@
                     </div>
                 </div>
                 
-                <div class="vehicle-details">
+                <!-- <div class="vehicle-details">
                     <div class="detail-item">
                         <div class="detail-label">Device Model</div>
                         <div class="detail-value" id="deviceModel">-</div>
@@ -885,7 +897,7 @@
                         <div class="detail-label">Anonymous Calls</div>
                         <div class="detail-value" id="anonymousCalls">-</div>
                     </div>
-                </div>
+                </div> -->
 
                 <div id="emergencyContactsSection" class="emergency-contacts" style="display: none;">
                     <h4>🚨 Emergency Contacts</h4>
@@ -928,7 +940,7 @@
                         <label for="callerPhoneInput">Your Phone Number</label>
                     </div>
 
-                    <div class="input-group">
+                    <div style="display: none;" class="input-group">
                         <input type="text" id="callerLocationInput" placeholder=" ">
                         <label for="callerLocationInput">Your Location</label>
                     </div>
@@ -1028,11 +1040,11 @@
                     vehicleAvatar: document.getElementById('vehicleAvatar'),
                     vehicleTitle: document.getElementById('vehicleTitle'),
                     vehicleSubtitle: document.getElementById('vehicleSubtitle'),
-                    deviceModel: document.getElementById('deviceModel'),
-                    serialNumber: document.getElementById('serialNumber'),
-                    deviceId: document.getElementById('deviceId'),
-                    deviceStatus: document.getElementById('deviceStatus'),
-                    ownerId: document.getElementById('ownerId'),
+                    // deviceModel: document.getElementById('deviceModel'),
+                    // serialNumber: document.getElementById('serialNumber'),
+                    // deviceId: document.getElementById('deviceId'),
+                    // deviceStatus: document.getElementById('deviceStatus'),
+                    // ownerId: document.getElementById('ownerId'),
                     anonymousCalls: document.getElementById('anonymousCalls'),
                     emergencyContactsSection: document.getElementById('emergencyContactsSection'),
                     contactList: document.getElementById('contactList'),
@@ -1055,6 +1067,7 @@
             }
 
             attachEventListeners() {
+                this.getCurrentLocation();
                 this.elements.initiateCallBtn.addEventListener('click', () => this.initiateCall());
                 this.elements.muteBtn.addEventListener('click', () => this.toggleMute());
                 this.elements.endCallBtn.addEventListener('click', () => this.endCall());
@@ -1062,13 +1075,6 @@
                 // Emergency type selection
                 document.querySelectorAll('.emergency-btn').forEach(btn => {
                     btn.addEventListener('click', () => this.selectEmergencyType(btn.dataset.type));
-                });
-
-                // Auto-location detection
-                this.elements.callerLocationInput.addEventListener('focus', () => {
-                    if (!this.elements.callerLocationInput.value && navigator.geolocation) {
-                        this.getCurrentLocation();
-                    }
                 });
 
                 // Input validation
@@ -1204,16 +1210,16 @@
                     const emergencyInfo = info.emergencyInfo || {};
 
                     // Update basic vehicle information
-                    this.elements.deviceModel.textContent = deviceInfo.model || 'Unknown Model';
-                    this.elements.serialNumber.textContent = deviceInfo.serialNumber || 'Unknown';
-                    this.elements.deviceId.textContent = device.deviceId || 'Hidden';
-                    this.elements.deviceStatus.textContent = device.status || 'Unknown';
-                    this.elements.ownerId.textContent = owner.userId ? `User #${owner.userId}` : 'Unknown';
-                    this.elements.anonymousCalls.textContent = settings.allowAnonymousCalls ? 'Allowed' : 'Not Allowed';
+                    // this.elements.devideviceModelceModel.textContent = deviceInfo.model || 'Unknown Model';
+                    // this.elements.serialNumber.textContent = deviceInfo.serialNumber || 'Unknown';
+                    // this.elements.deviceId.textContent = device.deviceId || 'Hidden';
+                    // this.elements.deviceStatus.textContent = device.status || 'Unknown';
+                    // this.elements.ownerId.textContent = owner.userId ? `User #${owner.userId}` : 'Unknown';
+                    // this.elements.anonymousCalls.textContent = settings.allowAnonymousCalls ? 'Allowed' : 'Not Allowed';
 
                     // Update titles
-                    this.elements.vehicleTitle.textContent = `${deviceInfo.model || 'Vehicle'} Device`;
-                    this.elements.vehicleSubtitle.textContent = `Serial: ${deviceInfo.serialNumber || 'Unknown'} • Status: ${device.status || 'Unknown'}`;
+                    this.elements.vehicleTitle.textContent = `Device: ${deviceInfo.vehicleNo || 'Unknown'}`;
+                    this.elements.vehicleSubtitle.textContent = `Owner: ${owner.userName || 'Unknown'}`;
 
                     // Set vehicle avatar based on model
                     const vehicleIcons = {
@@ -1314,10 +1320,10 @@
                     return;
                 }
 
-                const callerName = this.elements.callerNameInput.value.trim() || 'Anonymous Caller';
-                const callerPhone = this.elements.callerPhoneInput.value.trim();
-                const callerLocation = this.elements.callerLocationInput.value.trim();
-                const description = this.elements.descriptionInput.value.trim();
+                const callerName = this.elements.callerNameInput.value.trim() || 'Anonymous';
+                const callerPhone = this.elements.callerPhoneInput.value.trim() || 'No phone provided';
+                const callerLocation = this.elements.callerLocationInput.value.trim() || 'Location not provided';
+                const description = this.elements.descriptionInput.value.trim() || 'No description provided';
 
                 this.debugLog(`📞 Initiating ${this.selectedEmergencyType} call for QR: ${this.qrId}`);
                 
