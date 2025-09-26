@@ -15,7 +15,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            background: linear-gradient(135deg, #d4cccc, #d6adad);
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -33,18 +33,10 @@
             text-align: center;
             position: relative;
             overflow: hidden;
+            border-top: 5px solid #F82313;
         }
 
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #2c3e50, #3498db);
-        }
-
+      
         .debug-panel {
             background: #f8f9fa;
             border: 1px solid #dee2e6;
@@ -127,7 +119,7 @@
             top: -0.5rem;
             left: 0.8rem;
             font-size: 0.8rem;
-            color: #3498db;
+            color:black;
             background: white;
             padding: 0 0.5rem;
         }
@@ -140,7 +132,7 @@
             width: 100px;
             height: 100px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            background: linear-gradient(135deg, #ff473a, #F82313);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -155,7 +147,7 @@
             position: absolute;
             width: 120px;
             height: 120px;
-            border: 3px solid #27ae60;
+            border: 3px solid #F82313;
             border-radius: 50%;
             animation: pulse 2s infinite;
             opacity: 0.3;
@@ -188,7 +180,7 @@
             width: 80px;
             height: 80px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            background: #F82313;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -241,15 +233,32 @@
         }
 
         .btn-answer {
-            background: linear-gradient(135deg, #27ae60, #2ecc71);
-            color: white;
-            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+              display: flex;
+            padding: 10px 20px;
+            border:none;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 700;
+            border-radius: 15px;
+            background-color: white;
+            border: 2px solid #F82313;
+            color: #F82313;
         }
 
         .btn-reject {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            display: flex;
+            padding: 10px 20px;
+            border:none;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 700;
+            border-radius: 15px;
+            background: #F82313;
             color: white;
-            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
         }
 
         .active-call {
@@ -295,7 +304,18 @@
             color: white;
             box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
         }
-
+ .primary-btn-red {
+            background: #F82313;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
         .primary-btn {
             background: linear-gradient(135deg, #2c3e50, #3498db);
             color: white;
@@ -442,7 +462,7 @@
         <!-- Login Section -->
         <div id="loginSection" class="login-section">
             <div class="header">
-                <h1>📞 Voice Receiver</h1>
+                <h1>Voice Receiver</h1>
                 <p>Login to receive QR voice calls</p>
             </div>
 
@@ -459,8 +479,8 @@
                 <label for="passwordInput">Password</label>
             </div>
 
-            <button id="loginBtn" class="primary-btn">
-                🔐 Login & Start Listening
+            <button id="loginBtn" class="primary-btn-red" >
+            Login & Start Listening
             </button>
         </div>
 
@@ -472,38 +492,47 @@
             </div>
 
             <div class="status-indicator">
-                📞
+                <img src="./images/icon_4.png" src="caller image"/>
             </div>
 
             <p style="color: #7f8c8d; margin-bottom: 1rem;">
                 Your QR codes are active and ready to receive calls
             </p>
 
-            <button id="logoutBtn" class="primary-btn" style="background: linear-gradient(135deg, #6c757d, #495057);">
-                🚪 Logout
+            <button id="logoutBtn" class="primary-btn-red" >
+                 Logout
             </button>
         </div>
 
         <!-- Incoming Call Section -->
         <div id="incomingCall" class="incoming-call">
+            <    <div class="w-full h-48 rounded-2xl mb-4 overflow-hidden">
+                <img src="./images/RD_LOGO.jpeg" alt="Emergency Banner"style="width: 100%; height: 100%; object-fit: cover;"
+ />
+            </div>
+
             <div class="header">
-                <h1 class="ring-animation">📞 Incoming Call</h1>
+                <h1 class="ring-animation">
+                    <img src="./images/icon_6.png" alt="caller_img"/>
+                    Incoming Call</h1>
                 <p>Someone wants to talk to you</p>
             </div>
 
             <div class="caller-info">
-                <div class="caller-avatar" id="callerAvatar">👤</div>
+                <div class="caller-avatar" id="callerAvatar">                <img src="./images/icon_5.png" alt="user_image"/>
+</div>
                 <div class="caller-name" id="callerName">Anonymous Caller</div>
                 <div class="caller-details" id="callerDetails">Via QR Code</div>
                 <div class="caller-details" id="qrCodeName"></div>
             </div>
 
             <div class="call-actions">
-                <button id="rejectBtn" class="action-btn btn-reject" title="Reject Call">
-                    📞
+                <button id="rejectBtn" class=" btn-reject" title="Reject Call">
+                    <img src="./images/icon_4.png" alt="reject call"/> Reject
                 </button>
-                <button id="answerBtn" class="action-btn btn-answer" title="Answer Call">
-                    📞
+                <button id="answerBtn" class=" btn-answer" title="Answer Call">
+                                        <img src="./images/icon_6.png" alt="reject call"/>Answer
+
                 </button>
             </div>
         </div>
@@ -516,7 +545,8 @@
             </div>
 
             <div class="caller-info">
-                <div class="caller-avatar" id="activeCallerAvatar">👤</div>
+                <div class="caller-avatar" id="activeCallerAvatar">                <div class="caller-avatar" id="activeCallerAvatar"><img src="./images/icon_5.png" alt="user_image"/></div>
+</div>
                 <div class="caller-name" id="activeCallerName">Anonymous Caller</div>
             </div>
 
