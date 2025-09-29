@@ -239,7 +239,7 @@
             justify-content: center;
             align-items: center;
             gap: 10px;
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 700;
             border-radius: 15px;
             background-color: white;
@@ -249,17 +249,53 @@
 
         .btn-reject {
             display: flex;
-            padding: 10px 20px;
+            padding: 10px 16px;
             border:none;
             justify-content: center;
             align-items: center;
             gap: 10px;
-            font-size: 20px;
+            font-size: 16px;
             font-weight: 700;
             border-radius: 15px;
             background: #F82313;
             color: white;
         }
+.btn-answer, 
+.btn-reject {
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Hover effect */
+.btn-answer:hover, 
+.btn-reject:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(248, 35, 19, 0.3);
+}
+
+/* Active (click) effect */
+.btn-answer:active, 
+.btn-reject:active {
+  transform: scale(0.95);
+}
+
+/* Pulse animation */
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(248, 35, 19, 0.7); }
+  70% { box-shadow: 0 0 0 15px rgba(248, 35, 19, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(248, 35, 19, 0); }
+}
+
+.btn-answer {
+  animation: pulse 2s infinite;
+  border: 2px solid #F82313;
+}
+
+.btn-reject {
+  animation: pulse 2s infinite;
+}
 
         .active-call {
             display: none;
@@ -450,7 +486,7 @@
     </style>
 </head>
 <body>
-    <button class="toggle-debug" onclick="toggleDebug()">Toggle Debug</button>
+    <!-- <button class="toggle-debug" onclick="toggleDebug()">Toggle Debug</button> -->
     
     <div class="container">
         <!-- Debug Panel -->
@@ -528,10 +564,10 @@
 
             <div class="call-actions">
                 <button id="rejectBtn" class=" btn-reject" title="Reject Call">
-                    <img src="./images/icon_4.png" alt="reject call"/> Reject
+                    <img src="./images/icon_4.png" height="20" width="20"  alt="reject call"/> Reject
                 </button>
                 <button id="answerBtn" class=" btn-answer" title="Answer Call">
-                                        <img src="./images/icon_6.png" alt="reject call"/>Answer
+                                        <img src="./images/icon_6.png" height="20" width="20" alt="reject call"/>Answer
 
                 </button>
             </div>
@@ -562,10 +598,11 @@
 
             <div class="call-controls">
                 <button id="muteBtn" class="control-btn btn-mute" title="Mute/Unmute">
-                    🎤
+                    <img src="./images/icon_7.png" height="30" width="20"/>
                 </button>
                 <button id="endCallBtn" class="control-btn btn-end" title="End Call">
-                    📞
+                                        <img src="./images/icon_4.png" height="20" width="20"/>
+
                 </button>
             </div>
         </div>
@@ -587,11 +624,45 @@
                 
                 this.initializeElements();
                 this.attachEventListeners();
+                this.checkURLForToken();
                 this.checkExistingLogin();
                 
                 this.debugLog('🚀 Receiver app initialized');
             }
-
+checkURLForToken() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get("token");
+    
+    if (token) {
+        this.debugLog(`🔑 Token found in URL: ${token.substring(0, 20)}...`, 'success');
+        try {
+            // Decode JWT to get user info
+            const decoded = JSON.parse(atob(token.split('.')[1]));
+            this.userToken = token;
+            this.userId = decoded.user_id;
+            
+            // Store in localStorage
+            localStorage.setItem('receiverToken', this.userToken);
+            localStorage.setItem('receiverUserId', this.userId);
+            
+            this.debugLog(`✅ Auto-login successful for user: ${decoded.unique_name || this.userId}`, 'success');
+            
+            // Skip login screen and go directly to waiting section
+            this.showWaitingSection();
+            this.initializeSocket();
+            
+            // Clean up URL (remove token from URL bar for security)
+            const cleanUrl = window.location.pathname + window.location.search.replace(/[?&]token=[^&]*/, '').replace(/^&/, '?');
+            window.history.replaceState({}, document.title, cleanUrl);
+            
+            return true; // Token authentication successful
+        } catch (error) {
+            this.debugLog(`❌ Invalid token in URL: ${error.message}`, 'error');
+            this.showError('Invalid authentication token');
+        }
+    }
+    return false; // No token found
+}
             debugLog(message, type = 'info') {
                 const timestamp = new Date().toLocaleTimeString();
                 const logElement = document.getElementById('debugLog');
@@ -645,6 +716,11 @@
             }
 
             checkExistingLogin() {
+
+            if (this.userToken && this.userId) {
+            this.debugLog(`🔐 Already authenticated via URL token for user: ${this.userId}`);
+            return;
+            }
                 const token = localStorage.getItem('receiverToken');
                 const userId = localStorage.getItem('receiverUserId');
                 
@@ -818,32 +894,85 @@
                 });
             }
 
-            handleIncomingCall(callData) {
-                this.debugLog(`📞 Processing incoming call: ${JSON.stringify(callData)}`, 'success');
-                this.currentCall = callData;
-                
-                // Update caller info
-                const callerInfo = callData.callerInfo || {};
-                this.elements.callerName.textContent = callerInfo.name || 'Anonymous Caller';
-                this.elements.callerAvatar.textContent = (callerInfo.name || 'A').charAt(0).toUpperCase();
-                
-                let details = 'Via QR Code';
-                if (callerInfo.phone) {
-                    details += ` • ${callerInfo.phone}`;
-                }
-                if (callerInfo.location) {
-                    details += ` • ${callerInfo.location}`;
-                }
-                this.elements.callerDetails.textContent = details;
-                
-                if (callData.qrCodeName) {
-                    this.elements.qrCodeName.textContent = `QR: ${callData.qrCodeName}`;
-                }
-                
-                this.showIncomingCall();
-                this.playRingtone();
-            }
+      async getAddressFromCoordinates(lat, lon) {
+    try {
+        this.debugLog(`🌍 Fetching address for coordinates: ${lat}, ${lon}`);
+        const response = await fetch(`https://api.baliniot.in/api/Geocoding/${lat}/${lon}`);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const addressData = await response.json();
+        this.debugLog(`📥 Geocoding API response: ${JSON.stringify(addressData)}`);
+        
+        if (addressData && addressData.result && addressData.data) {
+            this.debugLog(`📍 Address resolved: ${addressData.data}`, 'success');
+            return addressData.data;
+        } else {
+            this.debugLog('⚠️ Address lookup failed or returned no data', 'warning');
+            this.debugLog(`Response structure: ${JSON.stringify(Object.keys(addressData || {}))}`);
+            return null;
+        }
+    } catch (error) {
+        this.debugLog(`❌ Failed to fetch address: ${error.message}`, 'error');
+        return null;
+    }
+}
 
+async handleIncomingCall(callData) {
+    this.debugLog(`📞 Processing incoming call: ${JSON.stringify(callData)}`, 'success');
+    this.currentCall = callData;
+    
+    // Update caller info
+    const callerInfo = callData.callerInfo || {};
+    this.elements.callerName.textContent = callerInfo.name || 'Anonymous Caller';
+    this.elements.callerAvatar.textContent = (callerInfo.name || 'A').charAt(0).toUpperCase();
+    
+    let details = 'Via QR Code';
+    if (callerInfo.phone) {
+        details += ` • ${callerInfo.phone}`;
+    }
+    
+    // Handle location - fetch address if coordinates are provided
+    if (callerInfo.location) {
+        this.debugLog(`🗺️ Processing location: ${callerInfo.location}`);
+        const locationCoords = callerInfo.location.split(',');
+        if (locationCoords.length === 2) {
+            const lat = locationCoords[0].trim();
+            const lon = locationCoords[1].trim();
+            this.debugLog(`📍 Extracted coordinates: lat=${lat}, lon=${lon}`);
+            
+            const address = await this.getAddressFromCoordinates(lat, lon);
+            this.debugLog(`🏠 Address result: ${address || 'null'}`);
+            
+            if (address) {
+                details += ` • ${address}`;
+                this.debugLog(`✅ Using address: ${address}`, 'success');
+            } else {
+                // Fallback to coordinates if address lookup fails
+                details += ` • ${callerInfo.location}`;
+                this.debugLog(`⚠️ Falling back to coordinates: ${callerInfo.location}`, 'warning');
+            }
+        } else {
+            // If location format is unexpected, use as is
+            details += ` • ${callerInfo.location}`;
+            this.debugLog('⚠️ Unexpected location format, using as provided', 'warning');
+        }
+    } else {
+        this.debugLog('ℹ️ No location data provided in call');
+    }
+    
+    this.debugLog(`📝 Final caller details: ${details}`);
+    this.elements.callerDetails.textContent = details;
+    
+    if (callData.qrCodeName) {
+        this.elements.qrCodeName.textContent = `QR: ${callData.qrCodeName}`;
+    }
+    
+    this.showIncomingCall();
+    this.playRingtone();
+}
             playRingtone() {
                 this.debugLog('🔔 Playing ringtone...');
                 // Simple beep using Web Audio API
@@ -893,12 +1022,19 @@
                 this.debugLog(`✅ Answering call: ${this.currentCall.callId}`);
 
                 try {
+                        // Prepare headers
+                 const headers = {
+                 'Content-Type': 'application/json'
+                 };
+
+                // Add Authorization header if token exists
+                    if (this.userToken) {
+                   headers['Authorization'] = `Bearer ${this.userToken}`;
+                    }
                     const response = await fetch(`https://qr.baliniot.in/api/calls/${this.currentCall.callId}/answer`, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${this.userToken}`
-                        }
+                        headers: headers
+
                     });
 
                     const data = await response.json();
@@ -940,12 +1076,19 @@
                 this.debugLog(`❌ Rejecting call: ${this.currentCall.callId}`);
 
                 try {
+                          // Prepare headers
+                     const headers = {
+                            'Content-Type': 'application/json'
+                     };
+
+                        // Add Authorization header if token exists
+                        if (this.userToken) {
+                          headers['Authorization'] = `Bearer ${this.userToken}`;
+                        }
                     await fetch(`https://qr.baliniot.in/api/calls/${this.currentCall.callId}/reject`, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${this.userToken}`
-                        }
+                        headers: headers
+
                     });
 
                     // Stop ringtone
@@ -1060,13 +1203,20 @@
                 this.debugLog('📴 Ending call...');
 
                 try {
+                         // Prepare headers
+                         const headers = {
+                                'Content-Type': 'application/json'
+                            };
+
+                            // Add Authorization header if token exists
+                            if (this.userToken) {
+                                headers['Authorization'] = `Bearer ${this.userToken}`;
+                            }
                     const duration = this.callStartTime ? Math.floor((Date.now() - this.callStartTime) / 1000) : 0;
                     
                     await fetch(`https://qr.baliniot.in/api/calls/${this.currentCall.callId}/end`, {
                         method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
+                                   headers: headers,
                         body: JSON.stringify({
                             duration,
                             endedBy: 'receiver'
