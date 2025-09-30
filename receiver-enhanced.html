@@ -1132,11 +1132,14 @@ async handleIncomingCall(callData) {
                     
                     this.currentCall = null;
                     this.showWaitingSection();
+                    this.exit()
                 } catch (error) {
                     this.debugLog(`❌ Error rejecting call: ${error.message}`, 'error');
                 }
             }
-
+            exit(){
+                console.log("exit called")
+            }
             showActiveCallInterface() {
                 const callerInfo = this.currentCall.callerInfo || {};
                 this.elements.activeCallerName.textContent = callerInfo.name || 'Anonymous Caller';
@@ -1247,7 +1250,7 @@ async handleIncomingCall(callData) {
                             endedBy: 'receiver'
                         })
                     });
-
+                    this.exit()
                     // Emit socket event
                     if (this.socket && this.socket.connected) {
                         this.socket.emit('call-ended', {
