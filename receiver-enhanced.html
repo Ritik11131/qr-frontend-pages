@@ -532,12 +532,12 @@
             </div>
 
             <p style="color: #7f8c8d; margin-bottom: 1rem;">
-                Your QR codes are active and ready to receive calls
+                Your QR code is active and ready to receive calls
             </p>
 
-            <button id="logoutBtn" class="primary-btn-red" >
+            <!-- <button id="logoutBtn" class="primary-btn-red" >
                  Logout
-            </button>
+            </button> -->
         </div>
 
         <!-- Incoming Call Section -->
@@ -890,6 +890,7 @@ checkURLForToken() {
                 this.socket.on('call-ended', (data) => {
                     this.debugLog(`📴 Call ended event: ${JSON.stringify(data)}`, 'warning');
                     this.handleCallEnded(data);
+                    Android.exitApp();
                 });
 
                 this.socket.on('error', (error) => {
