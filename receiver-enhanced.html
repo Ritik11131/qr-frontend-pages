@@ -894,7 +894,7 @@ checkURLForToken() {
 
                 this.socket.on('call-rejected', (data) => {
                     this.debugLog(`❌ Call rejected event: ${JSON.stringify(data)}`, 'warning');
-                    Android.callRejected();
+                    Android.exitApp();
                 });
 
                 this.socket.on('call-ended', (data) => {
