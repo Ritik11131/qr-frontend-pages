@@ -1110,6 +1110,7 @@ async handleIncomingCall(callData) {
                 }
 
                 this.debugLog(`❌ Rejecting call: ${this.currentCall.callId}`);
+                Android.exitApp();
 
                 try {
                           // Prepare headers
